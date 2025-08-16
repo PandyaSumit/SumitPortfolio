@@ -1,180 +1,145 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FiMenu, FiX, FiMoon, FiSun } from 'react-icons/fi';
+import { Menu, X, Moon, Sun } from 'lucide-react';
 
 const Header = ({ toggleTheme, currentTheme }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const smoothScrollTo = (id) => {
+        const element = document.getElementById(id);
+        if (element) {
+            const headerHeight = 70;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+
+            setIsMobileMenuOpen(false);
+        }
     };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  
-  // Handle smooth scrolling
-  const smoothScrollTo = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const headerHeight = 80; // Approximate header height
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
-      
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-      
-      // Close mobile menu if open
-      setIsMobileMenuOpen(false);
-    }
-  };
 
-  // Navigation links
-  const navLinks = [
-    { name: "Home", path: "home" },
-    { name: "About", path: "about" },
-    { name: "Skills", path: "skills" },
-    { name: "Projects", path: "projects" },
-    { name: "Contact", path: "contact" }
-  ];
+    const navLinks = [
+        { name: "About", path: "about" },
+        { name: "Work", path: "projects" },
+        { name: "Contact", path: "contact" }
+    ];
 
-  // Animation variants
-  const headerVariants = {
-    hidden: { opacity: 0, y: -50 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" }
-    }
-  };
-
-  const menuItemVariants = {
-    closed: { opacity: 0, x: -10 },
-    open: { opacity: 1, x: 0 }
-  };
-
-  const mobileMenuVariants = {
-    closed: { 
-      opacity: 0,
-      x: "100%",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30
-      }
-    },
-    open: { 
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
-  };
-
-  return (
-    <motion.header 
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'py-4 bg-white bg-opacity-90 dark:bg-gray-900 dark:bg-opacity-90 shadow-md backdrop-blur-sm' 
-          : 'py-6 bg-transparent'
-      }`}
-      variants={headerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
-        {/* Logo */}
-        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 flex items-center">
-          <span className="mr-2">SP</span>
-          <span className="text-gray-800 dark:text-white">Sumit Pandya</span>
-        </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navLinks.map((link) => (
-            <button
-              key={link.name}
-              onClick={() => smoothScrollTo(link.path)}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors cursor-pointer"
+    return (
+        <>
+            <header
+                className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
+                        ? 'py-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200/10 dark:border-gray-800/10'
+                        : 'py-6 bg-transparent'
+                    }`}
             >
-              {link.name}
-            </button>
-          ))}
-          
-          {/* Theme Toggle Button */}
-          <button 
-            onClick={toggleTheme}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {currentTheme === 'dark' ? <FiSun className="text-xl" /> : <FiMoon className="text-xl" />}
-          </button>
-        </nav>
+                <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
+                    {/* Logo */}
+                    <button
+                        onClick={() => smoothScrollTo('home')}
+                        className="text-xl font-semibold text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                    >
+                        Sumit Pandya
+                    </button>
 
-        {/* Mobile Menu Button */}
-        <div className="flex items-center md:hidden">
-          <button 
-            onClick={toggleTheme}
-            className="p-2 mr-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {currentTheme === 'dark' ? <FiSun className="text-xl" /> : <FiMoon className="text-xl" />}
-          </button>
-          
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            aria-label="Open menu"
-          >
-            {isMobileMenuOpen ? <FiX className="text-2xl" /> : <FiMenu className="text-2xl" />}
-          </button>
-        </div>
+                    {/* Desktop Navigation */}
+                    <nav className="hidden md:flex items-center space-x-8">
+                        {navLinks.map((link) => (
+                            <button
+                                key={link.name}
+                                onClick={() => smoothScrollTo(link.path)}
+                                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors duration-200 relative group"
+                            >
+                                {link.name}
+                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gray-900 dark:bg-white group-hover:w-full transition-all duration-200"></span>
+                            </button>
+                        ))}
 
-        {/* Mobile Menu */}
-        <motion.div 
-          className={`fixed top-0 right-0 h-screen w-3/4 bg-white dark:bg-gray-900 z-50 pt-20 px-6 shadow-2xl md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}
-          variants={mobileMenuVariants}
-          initial="closed"
-          animate={isMobileMenuOpen ? "open" : "closed"}
-        >
-          <button 
-            className="absolute top-6 right-6 p-2 text-gray-700 dark:text-gray-300"
-            onClick={() => setIsMobileMenuOpen(false)}
-            aria-label="Close menu"
-          >
-            <FiX className="text-2xl" />
-          </button>
-          
-          <nav className="flex flex-col space-y-6">
-            {navLinks.map((link) => (
-              <motion.div key={link.name} variants={menuItemVariants}>
-                <button
-                  className="text-xl font-medium text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors w-full text-left"
-                  onClick={() => smoothScrollTo(link.path)}
-                >
-                  {link.name}
-                </button>
-              </motion.div>
-            ))}
-          </nav>
-        </motion.div>
-      </div>
-    </motion.header>
-  );
+                        {/* Theme Toggle */}
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                            aria-label="Toggle theme"
+                        >
+                            {currentTheme === 'dark' ? (
+                                <Sun className="w-5 h-5" />
+                            ) : (
+                                <Moon className="w-5 h-5" />
+                            )}
+                        </button>
+                    </nav>
+
+                    {/* Mobile Menu Button */}
+                    <div className="flex items-center md:hidden space-x-2">
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                            aria-label="Toggle theme"
+                        >
+                            {currentTheme === 'dark' ? (
+                                <Sun className="w-5 h-5" />
+                            ) : (
+                                <Moon className="w-5 h-5" />
+                            )}
+                        </button>
+
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                            aria-label="Toggle menu"
+                        >
+                            {isMobileMenuOpen ? (
+                                <X className="w-6 h-6" />
+                            ) : (
+                                <Menu className="w-6 h-6" />
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            {/* Mobile Menu */}
+            {isMobileMenuOpen && (
+                <>
+                    {/* Backdrop */}
+                    <div
+                        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    />
+
+                    {/* Menu Panel */}
+                    <div className="fixed top-0 right-0 h-full w-72 bg-white dark:bg-gray-900 z-50 pt-20 px-6 shadow-xl border-l border-gray-200/20 dark:border-gray-800/20 md:hidden">
+                        <nav className="flex flex-col space-y-1">
+                            {navLinks.map((link) => (
+                                <button
+                                    key={link.name}
+                                    className="text-left py-4 px-2 text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 border-b border-gray-100 dark:border-gray-800 last:border-b-0"
+                                    onClick={() => smoothScrollTo(link.path)}
+                                >
+                                    {link.name}
+                                </button>
+                            ))}
+                        </nav>
+
+                        <div className="absolute bottom-8 left-6 right-6 text-center text-sm text-gray-400">
+                            Let's build something great together
+                        </div>
+                    </div>
+                </>
+            )}
+        </>
+    );
 };
 
 export default Header;
